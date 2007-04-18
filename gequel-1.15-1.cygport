@@ -1,0 +1,25 @@
+inherit utils
+
+DESCRIPTION="GTK+ MySQL frontend"
+HOMEPAGE="http://gequel.sourceforge.net/"
+SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
+
+DIFF_EXCLUDES="Makefile.in configure"
+
+src_compile() {
+	cd ${S}/Gtk2.0
+	mv -f COPYING COPYING.temp
+	cygautoreconf
+	cd ${B}
+	check_pkg_config GTK "gtk+-2.0"
+	CYGCONF_SOURCE="${S}/Gtk2.0" cygconf
+	cygmake \
+		gequel_LDFLAGS= \
+		gequel_LDADD="${GTK_LIBS} -L/usr/lib/mysql -lmysqlclient" \
+		gequel_DEPENDENCIES=
+}
+
+src_install() {
+	dobin ${B}/src/gequel.exe
+	doicon ${S}/pixmaps/mysql.xpm
+}
